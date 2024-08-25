@@ -107,16 +107,22 @@ function extractNotebookCode {
 #  --------------
 
 function reqs_lib_extract {
+    FILE_NAME=$1
+    CURRENT_VERSION=$2
 
     LIB_VERSION = $(
-      cat requirements.txt | \
-      egrep "pyspark==" | \
-      sed -e 's/^pyspark==//'
+      cat "$FILE_NAME" | \
+      egrep "$CURRENT_VERSION==" | \
+      awk 'BEGIN {FS="=="} {print 1}'
       )
 
-    if [ $CHECK -gt 0 ]; then
-        RESULT="FAILED"
+    CHECK="PASSED"
+
+    if [ $LIB_VERSION == $CURRENT_VERSION ]; then
+        CHECK="FAILED"
     fi
+
+    $CHECK
 }
 
 
