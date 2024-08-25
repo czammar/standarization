@@ -82,10 +82,48 @@ function extractNotebookCode {
     egrep '^([^<].*)'
 }
 
+#  ---------------  Validations on spark read and write
 
-########
+ function detection {
+    FILE_NAME=$1
+
+    CHECK=$(
+        cat $FILE_NAME | \
+        # remove commented code in Python and scala
+        egrep '^([^#|^////].*)' | \
+        egrep 'spark.read' |\
+         wc -l
+         )
+
+    RESULT="PASSED"
+
+    if [ $CHECK -gt 0 ]; then
+        RESULT="FAILED"
+    fi
+
+    echo $RESULT
+}
+
+#  --------------
+
+function reqs_lib_extract {
+
+    LIB_VERSION = $(
+      cat requirements.txt | \
+      egrep "pyspark==" | \
+      sed -e 's/^pyspark==//'
+      )
+
+    if [ $CHECK -gt 0 ]; then
+        RESULT="FAILED"
+    fi
+}
+
+
+
+#################################
 # --------------- Execution
-#####
+#################################
 
 
 # Remove log file if already exists
